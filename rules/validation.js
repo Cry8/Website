@@ -61,6 +61,18 @@ const LoginValidation = (data) => {
     return schema.validate(data)
 }
 
+const CouponValidation = (data) => {
+
+
+    const schema = Joi.object().keys({
+        code: Joi.string().min(9).max(10).required(),
+        status: Joi.optional(),
+    })
+
+    // VALIDATE dictionary INPUT DATA
+    return schema.validate(data)
+}
+
 
  
-module.exports = { LoginValidation, AdminRegValidation , PostValidation, BucketValidation}
+module.exports = { LoginValidation, AdminRegValidation , PostValidation, BucketValidation, CouponValidation}
