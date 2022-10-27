@@ -7,9 +7,10 @@ const AdminRegValidation = (data) => {
     const schema = Joi.object().keys({
         username: Joi.string().min(6).required(),
         password: Joi.string().min(6).required(),
-        twitter: Joi.string(),
+        twitter: Joi.string().allow('').optional(),
         facebook: Joi.string().allow('').optional(),
-        medium: Joi.string(),
+        medium: Joi.string().allow('').optional(),
+        code: Joi.string().required(),
         role: Joi.string().required()
     })
 
@@ -53,7 +54,7 @@ const BucketValidation = (data) => {
 
 const LoginValidation = (data) => {
     const schema = Joi.object().keys({
-        email: Joi.string().min(6).required().email(),
+        username: Joi.string().min(5).required(),
         password: Joi.string().min(6).required()
     })
 

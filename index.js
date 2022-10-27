@@ -2,6 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const db = require('./db/db')
 const cors = require('cors')
+const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const authRoute = require('./router/auths')
 const multerError = require('./rules/handleError')
@@ -10,24 +11,27 @@ const multerError = require('./rules/handleError')
 const app = express()
 
 
-
-const corsOption = {
-    origin: "*",
-    credentials: true,
-    credentials: true,
-    optionSuccessStatus:200,
-}
-app.use(cors(corsOption))
-
-// ALLOW COOKIES
-app.use(cookieParser())
-
-
 // enable secure credentials
 dotenv.config()
 
 // parse application/json
 app.use(express.json())
+
+const corsOption = {
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST"],
+    credentials: true,
+    optionSuccessStatus:200,
+}
+app.use(cors(corsOption))
+
+
+app.use(bodyParser.urlencoded({entended:true}))
+// ALLOW COOKIES
+app.use(cookieParser())
+
+
+
 
 
 app.use('/uploads',  express.static('./uploads'))

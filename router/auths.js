@@ -3,10 +3,12 @@ const AdminUser = require('../models/AdminUser.js')
 const WordsBucket = require('../models/WordsBucket.js')
 const Posts = require('../models/Posts.js')
 const Coupon = require('../models/Coupon.js')
-const { PostValidation, AdminRegValidation, BucketValidation, CouponValidation } = require('../rules/validation')
+const { PostValidation, AdminRegValidation, LoginValidation, BucketValidation, CouponValidation } = require('../rules/validation')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const upload  = require('../rules/imageValidation')
+const dotenv  = require('dotenv');
+dotenv.config()
 
 
 
@@ -105,14 +107,23 @@ router.post('/register',  async (req, res) => {
         return res.status(202).send(error.details[0].message)
     }
 
-    const {username,role, facebook}  = req.body
+    const {username,role, code}  = req.body
 
 
     //username duplicate check 
     const userCheck = await AdminUser.findOne({
         where: { username}
     })
-    if(userCheck) return res.json({"error": "Username already Exists"})
+    if(userCheck) return res.status(202).send("Username already Exists")
+
+    //code existence check 
+    const codeCheck = await Coupon.findOne({
+        where: { code}
+    })
+    if(!codeCheck) return res.status(202).send("code doesnt exist")
+    console.log("how far",codeCheck.status)
+
+    if(codeCheck.status == 1) return res.status(202).send("This code has been used")
 
     
     // encrypt the password
@@ -120,11 +131,16 @@ router.post('/register',  async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
 
 
+    // update Code status
+    const codeStatus = await Coupon.update(
+        {status: 1},
+        {where: { code}}
+    )
+
     // send and save info - database
     const postMe = await AdminUser.create({
         username,
         password:hashedPassword,
-        facebook,
         role,
     }).then((userInfo) => {
         res.status(200).send("Upload Successful")
@@ -182,6 +198,55 @@ WordsBucket.findAll().then((data) => res.status(200).send(data)).catch((err) => 
 );
 
 
+// LOGIN
+router.post('/login', async (req, res) => {
+    
+    // error message check
+    const { value, error } = LoginValidation(req.body)
+
+    if (error) {
+        return res.status(202).send(error.details[0].message)
+    }
+
+
+    const { username, password}  = req.body
+
+
+    //Email duplucate check 
+    const userCheck = await AdminUser.findOne({
+        where: { username}
+    })
+    if(!userCheck) return res.status(202).send("username doesnt Exists")
+
+    //  check Password 
+    const passwordCheck = await bcrypt.compare(password, userCheck.password).then((result) => {
+        if(!result) return res.status(202).send("Invalid Password")
+
+        const giveToken = jwt.sign({
+            id: userCheck.id,
+            password: userCheck.password,
+            role: userCheck.role
+        }, process.env.COOKIE, {expiresIn: "1h"});
+
+        const newCookie = res.cookie("grantToken", giveToken , {
+            // httpOnly: true,
+        //     // secure:true,
+            maxAge: 3600000,
+        //     // signed: true
+        }
+        )
+
+        if(newCookie) {
+            res.status(200).send(newCookie)
+
+        } else {
+            res.status(202).send("no cookie")
+
+        }
+    })
+ 
+ 
+});
 
 
 
