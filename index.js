@@ -2,10 +2,10 @@ const express = require('express')
 const dotenv = require('dotenv')
 const db = require('./db/db')
 const cors = require('cors')
-const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const authRoute = require('./router/auths')
 const multerError = require('./rules/handleError')
+const {validateToken} = require("./router/VerifyToken")
 
 // const control = require('./rules/imageValidation')
 const app = express()
@@ -13,9 +13,13 @@ const app = express()
 
 // enable secure credentials
 dotenv.config()
+// ALLOW COOKIES
+app.use(cookieParser())
 
+ 
 // parse application/json
 app.use(express.json())
+app.use(express.urlencoded({extended:true}))
 
 const corsOption = {
     origin: ["http://localhost:3000"],
@@ -23,14 +27,35 @@ const corsOption = {
     credentials: true,
     optionSuccessStatus:200,
 }
+
 app.use(cors(corsOption))
 
 
-app.use(bodyParser.urlencoded({entended:true}))
-// ALLOW COOKIES
-app.use(cookieParser())
 
 
+app.get('/validate', validateToken, (req, res, next) => {
+  res.status(200).json({auth: true,loggedIn: true,cookies:req.cookies})
+  next()
+})
+
+
+app.get('/logout',  async (req, res, next) => {
+
+   console.log(req.cookies.user)
+    if( req.cookies.user ) {
+      
+    res.clearCookie('user')
+    res.status(202).json({auth: false,loggedIn: false, cookie:'No cookies'})
+    res.end()
+    } else {
+      res.status(202).json({auth: false,loggedIn: false, cookie:'You are not logged in'})
+      next();
+  }
+ 
+  next()
+
+  })
+  
 
 
 

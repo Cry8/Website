@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const upload  = require('../rules/imageValidation')
 const dotenv  = require('dotenv');
+const {validateToken} = require("../router/VerifyToken")
 dotenv.config()
 
 
@@ -44,7 +45,7 @@ router.post('/coupons',  async (req, res) => {
     })
 
 })
-router.get("/getAllCodes", (req, res) => 
+router.get("/getAllCodes", validateToken, (req, res) => 
  
 Coupon.findAll().then((data) => res.status(200).send(data)).catch((err) => res.status(202).send("Unable to fetch your requested data"))
 
@@ -150,7 +151,7 @@ router.post('/register',  async (req, res) => {
 
 })
 
-router.get("/getAllAdmin", (req, res) => 
+router.get("/getAllAdmin", validateToken ,(req, res) => 
  
 AdminUser.findAll().then((data) => res.status(200).send(data)).catch((err) => res.status(202).send("Unable to fetch your requested data"))
 
@@ -160,7 +161,7 @@ AdminUser.findAll().then((data) => res.status(200).send(data)).catch((err) => re
 
 
 // DICTIONARY
-router.post('/bucket',  async (req, res) => {
+router.post('/bucket', validateToken,  async (req, res) => {
 
     // error message check
     const { value, error } = BucketValidation(req.body)
@@ -199,7 +200,7 @@ WordsBucket.findAll().then((data) => res.status(200).send(data)).catch((err) => 
 
 
 // LOGIN
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
     
     // error message check
     const { value, error } = LoginValidation(req.body)
@@ -224,30 +225,45 @@ router.post('/login', async (req, res) => {
 
         const giveToken = jwt.sign({
             id: userCheck.id,
-            password: userCheck.password,
-            role: userCheck.role
-        }, process.env.COOKIE, {expiresIn: "1h"});
+            username: userCheck,
+        }, process.env.COOKIE, {expiresIn: '1d' });
 
-        const newCookie = res.cookie("grantToken", giveToken , {
-            // httpOnly: true,
-        //     // secure:true,
-            maxAge: 3600000,
-        //     // signed: true
-        }
+        
+
+        const newCookie =  res.cookie("user", giveToken , {
+                maxAge: 24 * 60 * 60 * 1000 ,
+                path: '/',
+                // httpOnly: true,
+                // secure:true,
+                // signed: true
+            }
         )
+ 
 
         if(newCookie) {
-            res.status(200).send(newCookie)
-
+            res.status(200).json({auth: true,loggedIn: true,cookie:req.cookies})
         } else {
-            res.status(202).send("no cookie")
-
+            res.clearCookie('user')
+            res.status(202).json({auth: false,loggedIn: false, cookie:'No cookies'})
         }
     })
  
- 
+ next()
 });
 
+router.get('/login', async (req, res, next) => {
+    if(req.cookies.user) {
+        res.status(202).json({auth: true,loggedIn: true,cookie:req.cookies.user})
+     } else {
+        res.clearCookie('user')
+        res.status(202).json({auth: false,loggedIn: false, cookie:'No cookies'})
+        res.end()
+     }
+     next()
+})
+
+
+ 
 
 
 
