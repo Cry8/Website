@@ -9,8 +9,8 @@ const jwt = require('jsonwebtoken');
 const upload  = require('../rules/imageValidation')
 const dotenv  = require('dotenv');
 const {validateToken} = require("../router/VerifyToken")
+const {verify}  = require('jsonwebtoken')
 dotenv.config()
-
 
 
 // create code
@@ -225,10 +225,13 @@ router.post('/login', async (req, res, next) => {
 
         const giveToken = jwt.sign({
             id: userCheck.id,
-            username: userCheck,
+            username: userCheck.username,
+            role: userCheck.role,
+            medium: userCheck.medium,
+            twitter: userCheck.twitter,
+            facebook: userCheck.facebook,
         }, process.env.COOKIE, {expiresIn: '1d' });
 
-        
 
         const newCookie =  res.cookie("user", giveToken , {
                 maxAge: 24 * 60 * 60 * 1000 ,
@@ -253,8 +256,10 @@ router.post('/login', async (req, res, next) => {
 
 router.get('/login', async (req, res, next) => {
     if(req.cookies.user) {
+        console.log(req.cookies)
         res.status(202).json({auth: true,loggedIn: true,cookie:req.cookies.user})
-     } else {
+        next()
+    } else {
         res.clearCookie('user')
         res.status(202).json({auth: false,loggedIn: false, cookie:'No cookies'})
         res.end()
@@ -263,7 +268,26 @@ router.get('/login', async (req, res, next) => {
 })
 
 
+//  get current user
+router.get("/me" , validateToken, async (req, res) => {
  
+    var token = req.cookies.user || req.headers['x-access-token'] || req.headers['authorization'];
+
+   if(!token) { return res.status(202).send("You cannot perform any activities untill you are logged In") }
+
+    verify(token, process.env.COOKIE, async  (err, decoded) => {
+    if (err) { 
+        return res.status(403).json({ message: 'Invalid token' });
+      } else {
+        req.decoded = decoded;
+        
+        await AdminUser.findByPk(req.decoded.id, async   (err, user) => {
+          return  req.currentUser  = user;
+        }).then((data) => res.status(200).json({data})).catch((err) => res.status(403).send("Unable to fetch your requested data"))
+    }
+   })
+ 
+});
 
 
 

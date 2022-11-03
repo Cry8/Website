@@ -7,7 +7,6 @@ const authRoute = require('./router/auths')
 const multerError = require('./rules/handleError')
 const {validateToken} = require("./router/VerifyToken")
 
-// const control = require('./rules/imageValidation')
 const app = express()
 
 
@@ -44,7 +43,7 @@ app.get('/logout',  async (req, res, next) => {
    console.log(req.cookies.user)
     if( req.cookies.user ) {
       
-    res.clearCookie('user')
+    res.clearCookie('username')
     res.status(202).json({auth: false,loggedIn: false, cookie:'No cookies'})
     res.end()
     } else {
