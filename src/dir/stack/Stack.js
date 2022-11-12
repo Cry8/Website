@@ -1,26 +1,32 @@
-import * as React from 'react'
+import React , {Suspense, lazy}from 'react'
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
 import Home from '../pages/Home'
-import Error from '../pages/Error'
-import About from '../pages/About'
-import Author from '../pages/Author'
-import Trading from '../pages/Trading'
-import TradingIdeas from '../pages/TradingIdeas'
-import TechnicalAnalysis from '../pages/TechnicalAnalysis'
-import TradingSystem from '../pages/TradingSystem'
-import MostRead from '../pages/MostRead'
-import LatestPost from '../pages/LatestPost'
-import Blockchain from '../pages/crypto/Blockchain'
-import Nft from '../pages/crypto/Nft'
-import Eth from '../pages/crypto/Eth'
-import Altcoins from '../pages/crypto/Altcoins'
-import Zk from '../pages/crypto/Zk'
-import PrivacyNetworks from '../pages/crypto/PrivacyNetworks'
-import GameFinance from '../pages/crypto/GameFinance'
-import DataManagement from '../pages/crypto/DataManagement'
-import News from '../pages/News'
-import UserProfile from '../pages/UserProfile'
 
+function delayForDemo(promise) {
+  return new Promise(resolve => {
+    setTimeout(resolve, 1000);
+  }).then(() => promise);
+}
+
+const Error = lazy(() => delayForDemo(import('../pages/Error')));
+const About = lazy(() => delayForDemo(import('../pages/About')));
+const Author = lazy(() => delayForDemo(import('../pages/Author')));
+const Trading = lazy(() => delayForDemo(import('../pages/Trading')));
+const TradingIdeas = lazy(() => delayForDemo(import('../pages/TradingIdeas')));
+const TechnicalAnalysis = lazy(() => delayForDemo(import('../pages/TechnicalAnalysis')));
+const TradingSystem = lazy(() => delayForDemo(import('../pages/TradingSystem')));
+const LatestPost = lazy(() => delayForDemo(import('../pages/LatestPost')));
+const MostRead = lazy(() => delayForDemo(import('../pages/MostRead')));
+const Blockchain = lazy(() => delayForDemo(import('../pages/crypto/Blockchain')));
+const Nft = lazy(() => delayForDemo(import('..//pages/crypto/Nft')));
+const Eth = lazy(() => delayForDemo(import('../pages/crypto/Eth')));
+const Altcoins = lazy(() => delayForDemo(import('../pages/crypto/Altcoins')));
+const Zk = lazy(() => delayForDemo(import('../pages/crypto/Zk')));
+const PrivacyNetworks = lazy(() => delayForDemo(import('../pages/crypto/PrivacyNetworks')));
+const GameFinance = lazy(() => delayForDemo(import('../pages/crypto/GameFinance')));
+const DataManagement = lazy(() => delayForDemo(import('../pages/crypto/DataManagement')));
+const News = lazy(() => delayForDemo(import('../pages/News')));
+const UserProfile = lazy(() => delayForDemo(import('../pages/UserProfile')));
 
 
 const Stack = () => {
@@ -29,6 +35,7 @@ const Stack = () => {
   return (
     <React.Fragment>
       <BrowserRouter>
+      <Suspense>
         <Routes>
           <Route index element={<Home />} />
           <Route path="*" element={<Error />} />
@@ -51,7 +58,7 @@ const Stack = () => {
           <Route path="/DataManagement" element={<DataManagement />} />
           <Route path="/UserProfile" element={<UserProfile />} />
         </Routes>
-
+        </Suspense>
       </BrowserRouter>
     </React.Fragment>
   )
