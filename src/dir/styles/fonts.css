@@ -1,0 +1,60 @@
+
+/* ubuntu fonts */
+@font-face {
+    font-family: 'DMSans-Medium';
+    src: local('DMSans-Medium'), url("../../assets/Fonts/DMSans-Medium.ttf") format('truetype');  
+}
+  
+@font-face {
+    font-family: 'DMSans-Regular';
+    src: local('DMSans-Regular'), url("../../assets/Fonts/DMSans-Regular.ttf") format('truetype');  
+}
+
+    /* DM font class */
+
+.DmRegular {
+    font-family: DMSans-Regular ;
+}
+
+.DmMedium {
+    font-family: DMSans-Medium ;
+}
+      
+      
+  
+      
+
+  
+  /* ubuntu fonts */
+  
+  @font-face {
+    font-family: 'Ubuntu-Regular';
+    src: local('Ubuntu-Regular'), url("../../assets/Fonts/Ubuntu-Regular.ttf") format('truetype');  
+  }
+   
+  @font-face {
+    font-family: 'Ubuntu-Bold';
+    src: local('Ubuntu-Bold'), url("../../assets/Fonts/Ubuntu-Bold.ttf") format('truetype');  
+  }
+   
+  @font-face {
+    font-family: 'Ubuntu-Medium';
+    src: local('Ubuntu-Medium'), url("../../assets/Fonts/Ubuntu-Medium.ttf") format('truetype');  
+  }
+   
+  
+
+  /* ubuntu font class */
+  .ubuntuBold {
+    font-family: Ubuntu-Bold ;
+  }
+  .ubuntuRegular {
+    font-family: Ubuntu-Regular ;
+  }
+  .ubuntuMedium {
+    font-family: Ubuntu-Medium ;
+  }
+  
+
+
+  
