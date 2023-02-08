@@ -21,7 +21,7 @@ function Reg() {
 
     try{
 
-       await axios.post("http://localhost:5001/api/user/register",   {
+       await axios.post(`${process.env.REACT_APP_DB}/register`,   {
             username:username,
             password: password,
             code:code,
@@ -33,8 +33,7 @@ function Reg() {
             setStatus(result.data)
             setTimeout(() => {
                 navitage('/login')
-
-            }, 1000);
+            }, 2000);
         } else {
             setError(true)
             setStatus(result.data)
@@ -44,9 +43,8 @@ function Reg() {
             setStatus('')
             setSuccess(false)
             setError(false)
-        }, 10000);
+        }, 8000);
         
-        console.log(result);
     });
     } catch(err){
         console.log(err);
@@ -143,7 +141,7 @@ function Reg() {
               </div>
 
               <div className="text-center pt-4">
-                <Link to="/login">
+                <Link to="/">
                   <span className="inline-block cursor-pointer font-bold text-base  align-baseline text-[#042b56]">
                     Login.
                   </span>

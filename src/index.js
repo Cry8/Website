@@ -1,19 +1,18 @@
-import React from 'react';
-import * as ReactDOM from "react-dom";
-import './index.css';
-import App from './App';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import './index.css'
+import App from './App'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { AuthContextProvider } from './admin/contexts/AuthContext'
 
-const myQueryClient = new QueryClient();
-ReactDOM.render(
-
+const myQueryClient = new QueryClient()
+const root = ReactDOM.createRoot(document.getElementById('root'))
+root.render(
   <React.StrictMode>
     <QueryClientProvider client={myQueryClient}>
-      <App />
-      {/* <ReactQueryDevtools /> */}
+      <AuthContextProvider>
+        <App />
+      </AuthContextProvider>
     </QueryClientProvider>
-  </React.StrictMode>
-  ,
-  document.getElementById('root')
-);
+  </React.StrictMode>,
+)

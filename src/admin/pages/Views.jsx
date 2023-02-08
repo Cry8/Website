@@ -1,79 +1,92 @@
-import React from 'react';
+import React from "react";
 import SideNav from "../components/SideNav";
-import { useState } from "react";
-import axios, * as others from 'axios';
+import axios from "axios";
+import { useQuery } from "react-query";
 
 export default function Views() {
 
-    const [viewList, getList] = useState([]);
+  const { data  } = useQuery(
+    ["articles"],
+    async () => await axios.get(`${process.env.REACT_APP_DB}/getAllPosts`)
+  );
 
-    const viewAll = async () => {
-        console.log('you cliked me');
+  if(data){console.log(data.data)}
 
-
-        await axios.get("http://localhost:3001/loading").then((response) => {
-
-            console.log('before');
-            getList(response.data);
-            console.log(response);
-
-        });
-
-    };
-    return (
-
-        <>
-            <div className="flex">
-                <div className="w-1/8">
-                    <SideNav />
-                </div>
-                <div className="w-6/8">
-                    <div className="">
-                        <div className="pl-12   text-5xl font-bold">
-                            <div className="flex">
-                                <div className="w-1/2 text-center h-screen flex justify-center items-center">
-                                    View Them
-                                </div>
-                                <div className="w-1/2 h-screen flex justify-center items-center">
-                                    <div className="text-sm pt-0">
-                                        <div class="block p-6 rounded-lg shadow-lg bg-white max-w-md">
-
-
-                                            <div class="form-group mb-6">
-                                                {viewList.map((val, key) => {
-                                                    return (
-                                                        <div className='text-black'>
-                                                            <ul className='inline'>
-                                                                <li>
-                                                                    {val.email}
-                                                                </li>
-                                                                <li>
-                                                                    {val.who}
-                                                                </li>
-                                                                <li>
-                                                                    {val.message}
-                                                                </li>
-                                                            </ul>
-
-                                                        </div>
-                                                    );
-                                                })}
-
-                                            </div>
-
-                                            <div class="form-group mb-6">
-                                                <button type="submit" class=" form-control block w-full px-3 py-1.5 text-base bg-green-400 padding border border-solid border-gray-300 rounded  transition  ease-in-out m-0    focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInput7" placeholder="Email Header"
-                                                    onClick={viewAll} >Show All
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <>
+      <div className="w-full">
+        <SideNav />
+        <div className="w-full flex flex-wrap md:flex-nowrap">
+          <div className="hidden md:block w-60 h-full "></div>
+          <div className="flex-1 flex-wrap px-4">
+            <div className=" flex-wrap  md:flex ">
+            <div className="overflow-x-auto relative shadow-md sm:rounded-lg w-full mt-12">
+              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th scope="col" className="py-3 px-6">
+                      Topic
+                    </th>
+                    <th scope="col" className="py-3 px-6">
+                      Tags
+                    </th>
+                    <th scope="col" className="py-3 px-6">
+                      Category
+                    </th>
+                    <th scope="col" className="py-3 px-6">
+                      Posted By
+                    </th>
+                    <th scope="col" className="py-3 px-6">
+                      Likes
+                    </th>
+                    <th scope="col" className="py-3 px-6">
+                      DisLike
+                    </th>
+                    <th scope="col" className="py-3 px-6">
+                      Posted On
+                    </th>
+                    <th scope="col" className="py-3 px-6">
+                      Content
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data && 
+                  data.data.map((datas) => (
+                      
+                    <tr
+                      key={datas.id}
+                      className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+                    >
+                      <th
+                        scope="row"
+                        className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                      >
+                        {datas.topic}
+                      </th>
+                      <td className="py-4 px-6">{datas.tags}</td>
+                      <td className="py-4 px-6">{datas.category}</td>
+                      <td className="py-4 px-6">{datas.postedBy}</td>
+                      <td className="py-4 px-6">{datas.likes}</td>
+                      <td className="py-4 px-6">{datas.dislike}</td>
+                      <td className="py-4 px-6">{datas.createdAt}</td>
+                      <td className="py-4 px-6">
+                        <a
+                          href="#"
+                          className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                        >
+                          {`View Content`}
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-        </>
-    )
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
